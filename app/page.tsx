@@ -75,9 +75,6 @@ export default function Page() {
           <div className="w-full transform active:scale-95 transition-all">
             <EmergencyCallButton />
           </div>
-          <p className="mt-4 text-xs font-bold uppercase tracking-wider text-[#c1121f]">
-            Solo per emergenze o pericolo immediato
-          </p>
         </div>
 
         {/* Pulsante Ricerca Automatica Diretta su Google Maps */}
@@ -148,6 +145,9 @@ export default function Page() {
           Applicazione dimostrativa non ufficiale. Loghi e marchi appartengono ai legittimi proprietari. <br /> In caso di emergenza reale chiama il 112.
         </p>
       </footer>
+    </main>
+  )
+}
     </main>
   )
 }
