@@ -1,11 +1,38 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { EmergencyCallButton } from "@/components/emergency-call-button"
 
+// Icona SVG per il servizio Anti Violenza e Stalking
+function AntiViolenceRibbonSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M12 2C9 2 7 4 7 7c0 3 2.5 6 5 9 2.5-3 5-6 5-9 0-3-2-5-5-5z" fill="currentColor" fillOpacity="0.2" />
+      <path d="M8.5 13.5L4 21" />
+      <path d="M15.5 13.5L20 21" />
+      <path d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+    </svg>
+  )
+}
+
 export default function Page() {
+  const [isMobile, setIsMobile] = useState(true)
   const [loadingLocation, setLoadingLocation] = useState(false)
+
+  useEffect(() => {
+    const userAgent = typeof window !== "undefined" ? navigator.userAgent : ""
+    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+    setIsMobile(mobile)
+  }, [])
 
   const triggerHaptic = () => {
     if (typeof window !== "undefined" && "vibrate" in navigator) {
@@ -16,9 +43,13 @@ export default function Page() {
   const handleFindStation = () => {
     triggerHaptic()
     const queryTerm = encodeURIComponent("Stazione Carabinieri aperta ora")
-
+    
     const navigateToMaps = (url: string) => {
-      window.location.href = url
+      if (isMobile) {
+        window.location.href = url
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer")
+      }
     }
 
     if ("geolocation" in navigator) {
@@ -27,6 +58,7 @@ export default function Page() {
         (position) => {
           setLoadingLocation(false)
           const { latitude, longitude } = position.coords
+          // L'URL con ?api=1 e query forza Google Maps a lanciare ed eseguire subito la ricerca
           const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${queryTerm}&center=${latitude},${longitude}`
           navigateToMaps(mapsUrl)
         },
@@ -44,65 +76,111 @@ export default function Page() {
   }
 
   return (
-    <main className="light flex min-h-dvh flex-col items-center justify-between bg-[#f4f6fb] px-6 py-10">
+    <main className="light flex min-h-dvh flex-col items-center justify-between bg-[#f4f6fb] px-6 py-6 text-slate-900 font-sans">
       {/* Header */}
-      <header className="flex w-full max-w-md flex-col items-center pt-6 text-center">
+      <header className="flex w-full max-w-md flex-col items-center text-center pt-2">
         <Image
           src="/Carabinieri.png"
           alt="Logo dell'Arma dei Carabinieri"
-          width={200}
-          height={200}
+          width={120}
+          height={120}
           priority
-          className="mb-4 h-32 w-auto object-contain"
+          className="mb-2 h-24 w-auto object-contain"
         />
-        <h1 className="text-balance text-2xl font-bold tracking-tight text-[#1b2a49] sm:text-3xl">
+        <h1 className="text-balance text-2xl font-black tracking-wider text-[#0b1425] uppercase">
           Stazione Carabinieri
         </h1>
-        <div className="mt-3 h-1 w-16 rounded-full bg-[#c1121f]" aria-hidden="true" />
-        <p className="mt-4 text-pretty text-base font-medium text-[#4a556b]">Seleziona la tua necessità</p>
+        <div className="mt-1 flex gap-1 h-1 w-20 rounded-full bg-gradient-to-r from-[#c1121f] to-[#d4af37]" aria-hidden="true" />
+        <p className="mt-2 text-sm font-medium text-[#4a556b] leading-tight">
+          Servizio rapido di localizzazione e contatto
+        </p>
       </header>
 
-      {/* Actions */}
-      <section className="flex w-full max-w-md flex-col gap-6" aria-label="Azioni disponibili">
-        {/* Emergency button */}
-        <EmergencyCallButton />
+      {/* Avviso per dispositivi Desktop */}
+      {!isMobile && (
+        <div className="mt-3 w-full max-w-md rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-center text-xs font-semibold text-amber-900 flex items-center justify-center gap-2 shadow-sm">
+          <span>💻</span>
+          <span>Navighi da desktop? Per telefonare usa uno smartphone.</span>
+        </div>
+      )}
 
-        {/* Find station button with automatic GPS search */}
+      {/* Sezione Azioni Principali */}
+      <section className="mt-4 flex w-full max-w-md flex-col gap-4" aria-label="Azioni disponibili">
+        {/* Blocco Emergenza 112 */}
+        <div className="flex flex-col items-center rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="w-full transform active:scale-95 transition-all">
+            <EmergencyCallButton />
+          </div>
+          <p className="mt-4 text-xs font-bold uppercase tracking-wider text-[#c1121f]">
+            Solo per emergenze o pericolo immediato
+          </p>
+        </div>
+
+        {/* Pulsante Geolocalizzazione GPS */}
         <button
           onClick={handleFindStation}
           disabled={loadingLocation}
-          className="group relative flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-[#2a3d66] to-[#1b2a49] px-6 py-8 text-center shadow-[0_12px_0_0_#0d1526,0_20px_30px_-10px_rgba(27,42,73,0.6)] transition-all duration-150 active:translate-y-2 active:shadow-[0_4px_0_0_#0d1526,0_10px_20px_-10px_rgba(27,42,73,0.6)] disabled:opacity-75"
+          className="group relative flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-[#1b2a49] to-[#0b1425] px-6 py-5 text-center shadow-[0_8px_16px_rgba(11,20,37,0.25)] transition-all active:translate-y-0.5 active:shadow-[0_4px_8px_rgba(11,20,37,0.25)] disabled:opacity-75 border border-white/10"
         >
-          <span className="text-lg font-semibold uppercase tracking-wide text-white/80">
-            🔵 {loadingLocation ? "Rilevamento..." : "Trova"}
+          <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            📍 TROVA STAZIONE PIÙ VICINA APERTA
           </span>
-          <span className="mt-1 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-            STAZIONE APERTA
+          <span className="mt-1 text-xs font-medium text-slate-300">
+            {loadingLocation ? "Rilevamento posizione in corso..." : "Ricerca automatica stazioni aperte ora"}
           </span>
         </button>
 
-        {/* Anti Violenza e Stalking 1522 */}
+        {/* Pulsante Anti Violenza 1522 */}
         <a
           href="tel:1522"
           onClick={triggerHaptic}
-          className="flex items-center justify-center gap-3 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-100/70 p-4 shadow-sm transition active:scale-95"
+          className="flex items-center justify-center gap-3 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-100/70 p-3.5 shadow-sm transition active:scale-95 w-full"
         >
-          <span className="text-xl">💜</span>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-700 text-white shadow-sm">
+            <AntiViolenceRibbonSVG className="w-6 h-6" />
+          </div>
           <div className="text-left">
-            <span className="block text-xs font-bold uppercase tracking-wider text-purple-700">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-purple-700">
               Anti Violenza e Stalking
             </span>
-            <span className="text-base font-extrabold text-purple-950">Chiama il 1522</span>
+            <span className="text-sm font-extrabold text-purple-950">
+              Chiama il 1522
+            </span>
           </div>
         </a>
+
+        {/* Altri Numeri di Emergenza Rapidi (118 e 115) */}
+        <div className="flex flex-col gap-2 pt-1">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 text-center">
+            Altri numeri di emergenza:
+          </span>
+          <div className="flex justify-center gap-3">
+            <a 
+              href="tel:118" 
+              onClick={triggerHaptic} 
+              className="flex items-center gap-1.5 rounded-full bg-blue-100 px-4 py-2 text-xs font-extrabold text-blue-800 shadow-sm transition active:scale-95"
+            >
+              🚑 118 Sanità
+            </a>
+            <a 
+              href="tel:115" 
+              onClick={triggerHaptic} 
+              className="flex items-center gap-1.5 rounded-full bg-rose-100 px-4 py-2 text-xs font-extrabold text-rose-800 shadow-sm transition active:scale-95"
+            >
+              🚒 115 Vigili del Fuoco
+            </a>
+          </div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="flex w-full max-w-md flex-col items-center pt-8 text-center">
-        <p className="text-xs font-medium uppercase tracking-widest text-[#4a556b]/70">
+      {/* Footer e Note Legali */}
+      <footer className="mt-6 flex w-full max-w-md flex-col items-center text-center pb-2">
+        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#4a556b]">
           Servizio informativo per il cittadino
         </p>
-        <p className="mt-1 text-xs text-[#4a556b]/60">In caso di pericolo immediato chiama sempre il 112</p>
+        <p className="mt-1 text-[10px] leading-relaxed text-slate-400">
+          Applicazione dimostrativa non ufficiale. Loghi e marchi appartengono ai legittimi proprietari. <br /> In caso di emergenza reale chiama il 112.
+        </p>
       </footer>
     </main>
   )
