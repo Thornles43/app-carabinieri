@@ -42,33 +42,37 @@ export default function Page() {
 
   const handleFindStation = () => {
     triggerHaptic()
+    const query = encodeURIComponent("Stazione Carabinieri aperta ora")
+    
+    // Funzione helper per la navigazione sicura (evita blocchi pop-up su mobile)
+    const navigateToMaps = (url: string) => {
+      if (isMobile) {
+        window.location.href = url
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer")
+      }
+    }
+
     if ("geolocation" in navigator) {
       setLoadingLocation(true)
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLoadingLocation(false)
           const { latitude, longitude } = position.coords
-          // Ricerca automatica per stazioni aperte ora basata sulle coordinate GPS
-          const mapsUrl = `https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/@${latitude},${longitude},14z`
-          window.open(mapsUrl, "_blank", "noopener,noreferrer")
+          const mapsUrl = `https://www.google.com/maps/search/${query}/@${latitude},${longitude},14z`
+          navigateToMaps(mapsUrl)
         },
         () => {
           setLoadingLocation(false)
-          // Fallback senza coordinate precise
-          window.open(
-            "https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/",
-            "_blank",
-            "noopener,noreferrer"
-          )
+          // Fallback se la geolocalizzazione fallisce o viene negata
+          const fallbackUrl = `https://www.google.com/maps/search/${query}`
+          navigateToMaps(fallbackUrl)
         },
-        { timeout: 7000, enableHighAccuracy: true }
+        { timeout: 5000, enableHighAccuracy: true, maximumAge: 0 }
       )
     } else {
-      window.open(
-        "https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/",
-        "_blank",
-        "noopener,noreferrer"
-      )
+      const fallbackUrl = `https://www.google.com/maps/search/${query}`
+      navigateToMaps(fallbackUrl)
     }
   }
 
@@ -113,7 +117,7 @@ export default function Page() {
           </p>
         </div>
 
-        {/* Pulsante Geolocalizzazione GPS */}
+        {/* Pulsante Geolocalizzazione GPS con Logica Ricerca Aggiornata */}
         <button
           onClick={handleFindStation}
           disabled={loadingLocation}
