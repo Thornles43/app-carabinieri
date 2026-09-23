@@ -142,12 +142,9 @@ export default function Page() {
           Servizio informativo per il cittadino
         </p>
         <p className="mt-1 text-[10px] leading-relaxed text-slate-400">
-          Applicazione dimostrativa non ufficiale. Loghi e marchi appartengono ai legittimi proprietari. <br /> In caso di emergenza reale chiama il 112.
+          Applicazione dimostrativa non ufficiale. Loghi e marchi appartengono ai legittimi proprietari.
         </p>
       </footer>
-    </main>
-  )
-}
     </main>
   )
 }
