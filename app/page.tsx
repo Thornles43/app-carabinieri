@@ -26,7 +26,6 @@ function AntiViolenceRibbonSVG({ className = "w-6 h-6" }: { className?: string }
 
 export default function Page() {
   const [isMobile, setIsMobile] = useState(true)
-  const [loadingLocation, setLoadingLocation] = useState(false)
 
   useEffect(() => {
     const userAgent = typeof window !== "undefined" ? navigator.userAgent : ""
@@ -37,38 +36,6 @@ export default function Page() {
   const triggerHaptic = () => {
     if (typeof window !== "undefined" && "vibrate" in navigator) {
       navigator.vibrate(40)
-    }
-  }
-
-  const openMaps = (url: string) => {
-    if (isMobile) {
-      window.location.href = url
-    } else {
-      window.open(url, "_blank", "noopener,noreferrer")
-    }
-  }
-
-  const handleFindStation = () => {
-    triggerHaptic()
-    const fallbackUrl = "https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/"
-
-    if ("geolocation" in navigator) {
-      setLoadingLocation(true)
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLoadingLocation(false)
-          const { latitude, longitude } = position.coords
-          const mapsUrl = `https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/@${latitude},${longitude},14z`
-          openMaps(mapsUrl)
-        },
-        () => {
-          setLoadingLocation(false)
-          openMaps(fallbackUrl)
-        },
-        { timeout: 5000, enableHighAccuracy: true, maximumAge: 0 }
-      )
-    } else {
-      openMaps(fallbackUrl)
     }
   }
 
@@ -113,19 +80,21 @@ export default function Page() {
           </p>
         </div>
 
-        {/* Pulsante Geolocalizzazione GPS */}
-        <button
-          onClick={handleFindStation}
-          disabled={loadingLocation}
-          className="group relative flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-[#1b2a49] to-[#0b1425] px-6 py-5 text-center shadow-[0_8px_16px_rgba(11,20,37,0.25)] transition-all active:translate-y-0.5 active:shadow-[0_4px_8px_rgba(11,20,37,0.25)] disabled:opacity-75 border border-white/10"
+        {/* Pulsante Ricerca Automatica Diretta su Google Maps */}
+        <a
+          href="https://www.google.com/maps/search/Stazione+Carabinieri+aperte+ora/"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={triggerHaptic}
+          className="group relative flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-[#1b2a49] to-[#0b1425] px-6 py-5 text-center shadow-[0_8px_16px_rgba(11,20,37,0.25)] transition-all active:translate-y-0.5 active:shadow-[0_4px_8px_rgba(11,20,37,0.25)] border border-white/10"
         >
           <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
             📍 TROVA STAZIONE PIÙ VICINA APERTA
           </span>
           <span className="mt-1 text-xs font-medium text-slate-300">
-            {loadingLocation ? "Rilevamento posizione in corso..." : "Ricerca automatica stazioni aperte ora col GPS"}
+            Apre Google Maps ed esegue subito la ricerca
           </span>
-        </button>
+        </a>
 
         {/* Pulsante Anti Violenza 1522 */}
         <a
