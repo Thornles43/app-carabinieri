@@ -1,0 +1,21 @@
+{
+  "name": "Stazione Carabinieri",
+  "short_name": "Carabinieri",
+  "description": "Localizzatore rapido stazioni e chiamate di emergenza",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#1b2a49",
+  "icons": [
+    {
+      "src": "/carabinieri-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/carabinieri-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
