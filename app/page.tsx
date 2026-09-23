@@ -42,9 +42,8 @@ export default function Page() {
 
   const handleFindStation = () => {
     triggerHaptic()
-    const query = encodeURIComponent("Stazione Carabinieri aperta ora")
+    const queryTerm = encodeURIComponent("Stazione Carabinieri aperta ora")
     
-    // Funzione helper per la navigazione sicura (evita blocchi pop-up su mobile)
     const navigateToMaps = (url: string) => {
       if (isMobile) {
         window.location.href = url
@@ -59,19 +58,19 @@ export default function Page() {
         (position) => {
           setLoadingLocation(false)
           const { latitude, longitude } = position.coords
-          const mapsUrl = `https://www.google.com/maps/search/${query}/@${latitude},${longitude},14z`
+          // L'URL con ?api=1 e query forza Google Maps a lanciare ed eseguire subito la ricerca
+          const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${queryTerm}&center=${latitude},${longitude}`
           navigateToMaps(mapsUrl)
         },
         () => {
           setLoadingLocation(false)
-          // Fallback se la geolocalizzazione fallisce o viene negata
-          const fallbackUrl = `https://www.google.com/maps/search/${query}`
+          const fallbackUrl = `https://www.google.com/maps/search/?api=1&query=${queryTerm}`
           navigateToMaps(fallbackUrl)
         },
         { timeout: 5000, enableHighAccuracy: true, maximumAge: 0 }
       )
     } else {
-      const fallbackUrl = `https://www.google.com/maps/search/${query}`
+      const fallbackUrl = `https://www.google.com/maps/search/?api=1&query=${queryTerm}`
       navigateToMaps(fallbackUrl)
     }
   }
@@ -117,7 +116,7 @@ export default function Page() {
           </p>
         </div>
 
-        {/* Pulsante Geolocalizzazione GPS con Logica Ricerca Aggiornata */}
+        {/* Pulsante Geolocalizzazione GPS */}
         <button
           onClick={handleFindStation}
           disabled={loadingLocation}
