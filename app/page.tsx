@@ -48,13 +48,15 @@ export default function Page() {
         (position) => {
           setLoadingLocation(false)
           const { latitude, longitude } = position.coords
-          const mapsUrl = `https://www.google.com/maps/search/Stazione+Carabinieri/@${latitude},${longitude},14z`
+          // Ricerca automatica per stazioni aperte ora basata sulle coordinate GPS
+          const mapsUrl = `https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/@${latitude},${longitude},14z`
           window.open(mapsUrl, "_blank", "noopener,noreferrer")
         },
         () => {
           setLoadingLocation(false)
+          // Fallback senza coordinate precise
           window.open(
-            "https://www.google.com/maps/search/Stazione+Carabinieri+aperto+ora/",
+            "https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/",
             "_blank",
             "noopener,noreferrer"
           )
@@ -63,7 +65,7 @@ export default function Page() {
       )
     } else {
       window.open(
-        "https://www.google.com/maps/search/Stazione+Carabinieri+aperto+ora/",
+        "https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/",
         "_blank",
         "noopener,noreferrer"
       )
@@ -118,10 +120,10 @@ export default function Page() {
           className="group relative flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-[#1b2a49] to-[#0b1425] px-6 py-5 text-center shadow-[0_8px_16px_rgba(11,20,37,0.25)] transition-all active:translate-y-0.5 active:shadow-[0_4px_8px_rgba(11,20,37,0.25)] disabled:opacity-75 border border-white/10"
         >
           <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-            📍 TROVA STAZIONE PIÙ VICINA
+            📍 TROVA STAZIONE PIÙ VICINA APERTA
           </span>
           <span className="mt-1 text-xs font-medium text-slate-300">
-            {loadingLocation ? "Rilevamento posizione in corso..." : "Usa la posizione GPS in tempo reale"}
+            {loadingLocation ? "Rilevamento posizione in corso..." : "Ricerca automatica stazioni aperte ora"}
           </span>
         </button>
 
