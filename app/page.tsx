@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { useState, useEffect } from "react"
 import { EmergencyCallButton } from "@/components/emergency-call-button"
 
 // Icona SVG per il servizio Anti Violenza e Stalking
@@ -24,6 +25,53 @@ function AntiViolenceRibbonSVG({ className = "w-6 h-6" }: { className?: string }
 }
 
 export default function Page() {
+  const [isMobile, setIsMobile] = useState(true)
+  const [loadingLocation, setLoadingLocation] = useState(false)
+
+  useEffect(() => {
+    const userAgent = typeof window !== "undefined" ? navigator.userAgent : ""
+    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+    setIsMobile(mobile)
+  }, [])
+
+  const triggerHaptic = () => {
+    if (typeof window !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(40)
+    }
+  }
+
+  const openMaps = (url: string) => {
+    if (isMobile) {
+      window.location.href = url
+    } else {
+      window.open(url, "_blank", "noopener,noreferrer")
+    }
+  }
+
+  const handleFindStation = () => {
+    triggerHaptic()
+    const fallbackUrl = "https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/"
+
+    if ("geolocation" in navigator) {
+      setLoadingLocation(true)
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLoadingLocation(false)
+          const { latitude, longitude } = position.coords
+          const mapsUrl = `https://www.google.com/maps/search/Stazione+Carabinieri+aperta+ora/@${latitude},${longitude},14z`
+          openMaps(mapsUrl)
+        },
+        () => {
+          setLoadingLocation(false)
+          openMaps(fallbackUrl)
+        },
+        { timeout: 5000, enableHighAccuracy: true, maximumAge: 0 }
+      )
+    } else {
+      openMaps(fallbackUrl)
+    }
+  }
+
   return (
     <main className="light flex min-h-dvh flex-col items-center justify-between bg-[#f4f6fb] px-6 py-6 text-slate-900 font-sans">
       {/* Header */}
@@ -45,6 +93,14 @@ export default function Page() {
         </p>
       </header>
 
+      {/* Avviso per dispositivi Desktop */}
+      {!isMobile && (
+        <div className="mt-3 w-full max-w-md rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-center text-xs font-semibold text-amber-900 flex items-center justify-center gap-2 shadow-sm">
+          <span>💻</span>
+          <span>Navighi da desktop? Per telefonare usa uno smartphone.</span>
+        </div>
+      )}
+
       {/* Sezione Azioni Principali */}
       <section className="mt-4 flex w-full max-w-md flex-col gap-4" aria-label="Azioni disponibili">
         {/* Blocco Emergenza 112 */}
@@ -57,24 +113,24 @@ export default function Page() {
           </p>
         </div>
 
-        {/* Pulsante ricerca automatica Google Maps */}
-        <a
-          href="https://www.google.com/maps/search/?api=1&query=Stazione+Carabinieri+aperta+ora"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-[#1b2a49] to-[#0b1425] px-6 py-5 text-center shadow-[0_8px_16px_rgba(11,20,37,0.25)] transition-all active:translate-y-0.5 active:shadow-[0_4px_8px_rgba(11,20,37,0.25)] border border-white/10"
+        {/* Pulsante Geolocalizzazione GPS */}
+        <button
+          onClick={handleFindStation}
+          disabled={loadingLocation}
+          className="group relative flex w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-[#1b2a49] to-[#0b1425] px-6 py-5 text-center shadow-[0_8px_16px_rgba(11,20,37,0.25)] transition-all active:translate-y-0.5 active:shadow-[0_4px_8px_rgba(11,20,37,0.25)] disabled:opacity-75 border border-white/10"
         >
           <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
             📍 TROVA STAZIONE PIÙ VICINA APERTA
           </span>
           <span className="mt-1 text-xs font-medium text-slate-300">
-            Apre Google Maps ed esegue subito la ricerca
+            {loadingLocation ? "Rilevamento posizione in corso..." : "Ricerca automatica stazioni aperte ora col GPS"}
           </span>
-        </a>
+        </button>
 
         {/* Pulsante Anti Violenza 1522 */}
         <a
           href="tel:1522"
+          onClick={triggerHaptic}
           className="flex items-center justify-center gap-3 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-100/70 p-3.5 shadow-sm transition active:scale-95 w-full"
         >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-700 text-white shadow-sm">
@@ -98,12 +154,14 @@ export default function Page() {
           <div className="flex justify-center gap-3">
             <a 
               href="tel:118" 
+              onClick={triggerHaptic} 
               className="flex items-center gap-1.5 rounded-full bg-blue-100 px-4 py-2 text-xs font-extrabold text-blue-800 shadow-sm transition active:scale-95"
             >
               🚑 118 Sanità
             </a>
             <a 
               href="tel:115" 
+              onClick={triggerHaptic} 
               className="flex items-center gap-1.5 rounded-full bg-rose-100 px-4 py-2 text-xs font-extrabold text-rose-800 shadow-sm transition active:scale-95"
             >
               🚒 115 Vigili del Fuoco
