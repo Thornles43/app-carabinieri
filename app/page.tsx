@@ -71,7 +71,7 @@ export default function Page() {
           </a>
         </div>
 
-        {/* Blocco 2: Trova Stazione (Texture Mappa con Pin e Bussola) */}
+        {/* Blocco 2: Trova Stazione (Mantiene la ricerca automatica 'aperte ora') */}
         <a
           href="https://www.google.com/maps/search/Stazione+Carabinieri+aperte+ora/"
           target="_blank"
@@ -102,10 +102,10 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Testo */}
+            {/* Testo aggiornato */}
             <div className="flex flex-col text-center flex-1">
               <span className="text-base font-extrabold tracking-tight leading-snug uppercase">
-                Trova Stazione Più Vicina Aperta
+                Trova Stazione Più Vicina
               </span>
               <span className="text-[11px] font-medium text-slate-300 mt-0.5">
                 Apre Google Maps ed esegue subito la ricerca
