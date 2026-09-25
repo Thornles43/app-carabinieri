@@ -19,7 +19,10 @@ export default function Page() {
   }
 
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-between bg-[#f2f5f9] px-4 py-6 text-slate-900 font-sans">
+    <main 
+      style={{ colorScheme: "light" }} 
+      className="light min-h-dvh flex flex-col items-center justify-between bg-[#f2f5f9] px-4 py-6 text-slate-900 font-sans"
+    >
       <div className="w-full max-w-sm flex flex-col items-center gap-5 my-auto">
         
         {/* Header */}
@@ -71,7 +74,7 @@ export default function Page() {
           </a>
         </div>
 
-        {/* Blocco 2: Trova Stazione (Mantiene la ricerca automatica 'aperte ora') */}
+        {/* Blocco 2: Trova Stazione */}
         <a
           href="https://www.google.com/maps/search/Stazione+Carabinieri+aperte+ora/"
           target="_blank"
@@ -102,7 +105,7 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Testo aggiornato */}
+            {/* Testo */}
             <div className="flex flex-col text-center flex-1">
               <span className="text-base font-extrabold tracking-tight leading-snug uppercase">
                 Trova Stazione Più Vicina
@@ -112,7 +115,7 @@ export default function Page() {
               </span>
             </div>
 
-            {/* Icona Bussola / Navigazione */}
+            {/* Icona Bussola */}
             <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white">
               <svg className="w-5 h-5 fill-current transform rotate-45" viewBox="0 0 24 24">
                 <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
